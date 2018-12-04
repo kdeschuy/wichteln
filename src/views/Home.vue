@@ -1,18 +1,46 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <button @click="createGroup">
+      Create new group
+    </button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import remote from '@/remote'
 
 export default {
   name: 'home',
-  components: {
-    HelloWorld
+
+  computed: {
+    database () { return remote.database() }
+  },
+
+  methods: {
+    uid () {
+      return Date.now().toString(16).slice(-2) + (Math.random().toString(16).slice(2, 6))
+    },
+
+    _generateGroup () {
+      return {
+        template: '',
+        budget: 15,
+        deadline: '16-12-2018'
+      }
+    },
+
+    async createGroup () {
+      const groupRef = await this.database.ref('groups').push()
+      groupRef.set(this._generateGroup())
+
+      const adminUid = this.uid()
+      await Promise.all([
+        this.database.ref(`uids/${adminUid}`).set({ groupId: groupRef.key, admin: true }),
+        this.database.ref(`uids/${this.uid()}`).set({ groupId: groupRef.key, admin: false })
+      ])
+
+      this.$router.replace({ name: 'group', params: { uid: adminUid } })
+    }
   }
 }
 </script>
