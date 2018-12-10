@@ -1,6 +1,6 @@
 <template>
   <div class="group">
-    The budget for this group is {{ budget }}
+    {{ $t('admin.budget', { budget }) }}
   </div>
 </template>
 

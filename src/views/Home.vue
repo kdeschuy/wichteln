@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <button @click="createGroup">
-      Create new group
+      {{ $t('main.button') }}
     </button>
   </div>
 </template>
